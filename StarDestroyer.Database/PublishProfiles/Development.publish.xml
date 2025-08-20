@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseName>StarDestroyerDB</TargetDatabaseName>
+    <DeployScriptFileName>StarDestroyerDB_Development.sql</DeployScriptFileName>
+    <TargetConnectionString>Data Source=localhost,1433;Initial Catalog=StarDestroyerDB;User ID=sa;Password=UsingTheF0rce!;Trust Server Certificate=true</TargetConnectionString>
+    <ProfileVersionNumber>1</ProfileVersionNumber>
+    <BlockOnPossibleDataLoss>True</BlockOnPossibleDataLoss>
+    <BackupDatabaseBeforeChanges>True</BackupDatabaseBeforeChanges>
+    <ScriptDatabaseOptions>False</ScriptDatabaseOptions>
+    <IncludeTransactionalScripts>True</IncludeTransactionalScripts>
+    <DoNotAlterReplicatedObjects>True</DoNotAlterReplicatedObjects>
+    <DoNotAlterChangeDataCaptureObjects>True</DoNotAlterChangeDataCaptureObjects>
+    <DisableAndReenableDdlTriggers>True</DisableAndReenableDdlTriggers>
+    <DeployDatabaseInSingleUserMode>False</DeployDatabaseInSingleUserMode>
+    <CreateNewDatabase>False</CreateNewDatabase>
+    <RegisterDataTierApplication>False</RegisterDataTierApplication>
+    <AllowIncompatiblePlatform>False</AllowIncompatiblePlatform>
+    <TreatVerificationErrorsAsWarnings>False</TreatVerificationErrorsAsWarnings>
+    <GenerateSmartDefaults>True</GenerateSmartDefaults>
+  </PropertyGroup>
+</Project>

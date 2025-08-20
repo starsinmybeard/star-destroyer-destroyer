@@ -1,6 +1,4 @@
-using StarDestroyer.Domain.Models;
-
-namespace StarDestroyer.Domain.Interfaces;
+namespace StarDestroyer.Domain;
 
 public interface IStarshipRepository
 {

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StarDestroyer.Domain.Interfaces;
-using StarDestroyer.Domain.Models;
+using StarDestroyer.Domain;
 
 namespace StarDestroyer.Api.Controllers;
 
@@ -8,18 +7,20 @@ namespace StarDestroyer.Api.Controllers;
 [Route("api/[controller]")]
 public class StarshipsController : ControllerBase
 {
-    private readonly IStarshipRepository _repository;
-    private readonly ISwapiService _swapiService;
-    private readonly ILogger<StarshipsController> _logger;
+    private readonly IStarshipService StarshipService;
+    
+    private readonly ISwapiService SwApiService;
+    
+    private readonly ILogger<StarshipsController> Logger;
 
     public StarshipsController(
-        IStarshipRepository repository,
+        IStarshipService starshipService,
         ISwapiService swapiService,
         ILogger<StarshipsController> logger)
     {
-        _repository = repository;
-        _swapiService = swapiService;
-        _logger = logger;
+        StarshipService = starshipService;
+        SwApiService = swapiService;
+        Logger = logger;
     }
 
     [HttpGet]
@@ -27,12 +28,42 @@ public class StarshipsController : ControllerBase
     {
         try
         {
-            var starships = await _repository.GetAllAsync();
+            var starships = await StarshipService.GetAllAsync();
             return Ok(starships);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving starships");
+            Logger.LogError(ex, "Error retrieving starships");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("starship-classes")]
+    public async Task<ActionResult<IEnumerable<string>>> GetStarshipClasses()
+    {
+        try
+        {
+            var classes = await StarshipService.GetDistinctStarshipClassesAsync();
+            return Ok(classes);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving starship classes");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("manufacturers")]
+    public async Task<ActionResult<IEnumerable<string>>> GetManufacturers()
+    {
+        try
+        {
+            var manufacturers = await StarshipService.GetDistinctManufacturersAsync();
+            return Ok(manufacturers);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving manufacturers");
             return StatusCode(500, "Internal server error");
         }
     }
@@ -42,7 +73,7 @@ public class StarshipsController : ControllerBase
     {
         try
         {
-            var starship = await _repository.GetByIdAsync(id);
+            var starship = await StarshipService.GetByIdAsync(id);
             if (starship == null)
                 return NotFound();
 
@@ -50,7 +81,7 @@ public class StarshipsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving starship with id {Id}", id);
+            Logger.LogError(ex, "Error retrieving starship with id {Id}", id);
             return StatusCode(500, "Internal server error");
         }
     }
@@ -63,12 +94,12 @@ public class StarshipsController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdStarship = await _repository.CreateAsync(starship);
+            var createdStarship = await StarshipService.CreateAsync(starship);
             return CreatedAtAction(nameof(GetStarship), new { id = createdStarship.Id }, createdStarship);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating starship");
+            Logger.LogError(ex, "Error creating starship");
             return StatusCode(500, "Internal server error");
         }
     }
@@ -81,18 +112,33 @@ public class StarshipsController : ControllerBase
             if (id != starship.Id)
                 return BadRequest("ID mismatch");
 
-            if (!await _repository.ExistsAsync(id))
+            if (!await StarshipService.ExistsAsync(id))
                 return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _repository.UpdateAsync(starship);
+            await StarshipService.UpdateAsync(starship);
             return NoContent();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating starship with id {Id}", id);
+            Logger.LogError(ex, "Error updating starship with id {Id}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpDelete("all")]
+    public async Task<IActionResult> DeleteAllStarships()
+    {
+        try
+        {
+            var count = await StarshipService.DeleteAllAsync();
+            return Ok($"Successfully deleted {count} starships");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting all starships");
             return StatusCode(500, "Internal server error");
         }
     }
@@ -102,7 +148,7 @@ public class StarshipsController : ControllerBase
     {
         try
         {
-            var deleted = await _repository.DeleteAsync(id);
+            var deleted = await StarshipService.DeleteAsync(id);
             if (!deleted)
                 return NotFound();
 
@@ -110,7 +156,7 @@ public class StarshipsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting starship with id {Id}", id);
+            Logger.LogError(ex, "Error deleting starship with id {Id}", id);
             return StatusCode(500, "Internal server error");
         }
     }
@@ -120,18 +166,33 @@ public class StarshipsController : ControllerBase
     {
         try
         {
-            var swapiStarships = await _swapiService.FetchStarshipsFromSwapiAsync();
+            var swapiStarships = await SwApiService.FetchStarshipsFromSwapiAsync();
             
             foreach (var starship in swapiStarships)
             {
-                await _repository.CreateAsync(starship);
+                await StarshipService.CreateAsync(starship);
             }
 
             return Ok($"Successfully seeded {swapiStarships.Count()} starships from SWAPI");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error seeding starships from SWAPI");
+            Logger.LogError(ex, "Error seeding starships from SWAPI");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPost("filtered")]
+    public async Task<ActionResult<PagedResultDto<StarshipDto>>> GetFilteredStarships([FromBody] StarshipFilterDto filter)
+    {
+        try
+        {
+            var result = await StarshipService.GetFilteredStarshipsAsync(filter);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving filtered starships");
             return StatusCode(500, "Internal server error");
         }
     }

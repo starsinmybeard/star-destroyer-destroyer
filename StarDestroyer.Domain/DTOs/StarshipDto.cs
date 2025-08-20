@@ -1,57 +1,60 @@
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace StarDestroyer.Domain;
 
-public class Starship
+public class StarshipDto
 {
-    public int Id { get; init; }
-    
-    [Required]
-    [MaxLength(100)]
+    [JsonPropertyName("name")]
     public string Name { get; init; } = string.Empty;
-    
-    [MaxLength(100)]
+
+    [JsonPropertyName("model")]
     public string Model { get; init; } = string.Empty;
-    
-    [MaxLength(100)]
+
+    [JsonPropertyName("manufacturer")]
     public string Manufacturer { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("cost_in_credits")]
     public string CostInCredits { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("length")]
     public string Length { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("max_atmosphering_speed")]
     public string MaxAtmospheringSpeed { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("crew")]
     public string Crew { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("passengers")]
     public string Passengers { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("cargo_capacity")]
     public string CargoCapacity { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("consumables")]
     public string Consumables { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("hyperdrive_rating")]
     public string HyperdriveRating { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
+    [JsonPropertyName("MGLT")]
     public string MGLT { get; init; } = string.Empty;
-    
-    [MaxLength(50)]
+
     [JsonPropertyName("starship_class")]
     public string StarshipClass { get; init; } = string.Empty;
+
+    [JsonPropertyName("pilots")]
+    public List<string> Pilots { get; init; } = new ();
+
+    [JsonPropertyName("films")]
+    public List<string> Films { get; init; } = new ();
+
+    [JsonPropertyName("created")]
+    public string Created { get; init; } = string.Empty;
+
+    [JsonPropertyName("edited")]
+    public string Edited { get; init; } = string.Empty;
     
-    public DateTime Created { get; init; }
-    
-    public DateTime Edited { get; init; }
-    
-    [MaxLength(500)]
+    [JsonPropertyName("url")]
     public string Url { get; init; } = string.Empty;
 }
