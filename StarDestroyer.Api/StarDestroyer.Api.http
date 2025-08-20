@@ -1,0 +1,5 @@
+@StarDestroyer.Api_HostAddress = http://localhost:5069
+
+Accept: application/json
+
+###
