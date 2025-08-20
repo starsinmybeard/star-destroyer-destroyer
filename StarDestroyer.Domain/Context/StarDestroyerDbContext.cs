@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using StarDestroyer.Domain.Models;
 
-namespace StarDestroyer.Database.Context;
+namespace StarDestroyer.Domain;
 
 public class StarDestroyerDbContext : DbContext
 {
@@ -9,7 +8,7 @@ public class StarDestroyerDbContext : DbContext
     {
     }
     
-    public DbSet<Starship> Starships { get; set; }
+    public DbSet<Starship> Starships => Set<Starship>();
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -34,7 +34,7 @@ fi
 
 # Apply database migrations
 echo "🗄️ Setting up database..."
-dotnet ef database update --project StarDestroyer.Database --startup-project StarDestroyer.Api
+dotnet ef database update --project StarDestroyer.Domain --startup-project StarDestroyer.Api
 
 echo ""
 echo "✅ Setup complete!"
