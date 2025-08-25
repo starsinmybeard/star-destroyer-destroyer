@@ -50,6 +50,11 @@ export const starshipService = {
     await api.delete(`/starships/${id}`);
   },
 
+  deleteAllStarships: async (): Promise<string> => {
+    const response = await api.delete<string>('/starships/all');
+    return response.data;
+  },
+
   seedFromSwapi: async (): Promise<string> => {
     const response = await api.post<string>('/starships/seed');
     return response.data;

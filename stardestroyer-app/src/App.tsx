@@ -121,6 +121,27 @@ function App() {
     }
   };
 
+  const handleDeleteAllStarships = async () => {
+    if (!window.confirm('Are you sure you want to delete ALL starships? This action cannot be undone.')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      await starshipService.deleteAllStarships();
+      if (useFiltering) {
+        await loadFilteredStarships(currentFilter);
+      } else {
+        await loadStarships();
+      }
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete all starships');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleFilterChange = (filter: StarshipFilter) => {
     setUseFiltering(true);
     loadFilteredStarships(filter);
@@ -162,6 +183,14 @@ function App() {
                 Show All Starships
               </Button>
             )}
+            <Button 
+              variant="outline-danger" 
+              onClick={handleDeleteAllStarships}
+              disabled={loading}
+              className="me-2"
+            >
+              Delete All Starships
+            </Button>
             <Button 
               variant="outline-primary" 
               onClick={handleSeedFromSwapi}
