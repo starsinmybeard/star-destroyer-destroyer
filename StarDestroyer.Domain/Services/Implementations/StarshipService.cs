@@ -61,9 +61,9 @@ public class StarshipService(StarDestroyerDbContext dbContext) : IStarshipServic
         {
             var searchTerm = filter.SearchTerm.ToLower();
             query = query.Where(s => 
-                s.Name.ToLower().Contains(searchTerm) ||
-                s.Model.ToLower().Contains(searchTerm) ||
-                s.Manufacturer.ToLower().Contains(searchTerm));
+                s.Name.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
+                s.Model.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase) ||
+                s.Manufacturer.Contains(searchTerm, StringComparison.CurrentCultureIgnoreCase));
         }
 
         // Apply starship class filter
@@ -98,7 +98,7 @@ public class StarshipService(StarDestroyerDbContext dbContext) : IStarshipServic
                 length <= filter.MaxLength.Value).ToList();
         }
 
-        starships = ApplySorting(starships, filter.SortBy, filter.SortDirection);
+        starships = SortStarships(starships, filter.SortBy, filter.SortDirection);
 
         var totalCount = starships.Count;
 
@@ -138,7 +138,7 @@ public class StarshipService(StarDestroyerDbContext dbContext) : IStarshipServic
             .ToListAsync();
     }
 
-    private List<Starship> ApplySorting(List<Starship> starships, string? sortBy, string? sortDirection)
+    private List<Starship> SortStarships(List<Starship> starships, string? sortBy, string? sortDirection)
     {
         if (string.IsNullOrWhiteSpace(sortBy))
             sortBy = "Name";
@@ -171,7 +171,7 @@ public class StarshipService(StarDestroyerDbContext dbContext) : IStarshipServic
         };
     }
 
-    private int GetNumericLength(string? length)
+    private static int GetNumericLength(string? length)
     {
         if (string.IsNullOrEmpty(length))
             return 0;
