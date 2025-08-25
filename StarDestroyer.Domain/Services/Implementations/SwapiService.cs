@@ -5,14 +5,16 @@ namespace StarDestroyer.Domain;
 
 public class SwapiService : ISwapiService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<SwapiService> _logger;
+    private readonly HttpClient HttpClient;
+
+    private readonly ILogger<SwapiService> Logger;
+
     private const string SwapiBaseUrl = "https://swapi.info/api/";
 
     public SwapiService(HttpClient httpClient, ILogger<SwapiService> logger)
     {
-        _httpClient = httpClient;
-        _logger = logger;
+        HttpClient = httpClient;
+        Logger = logger;
     }
 
     public async Task<IEnumerable<Starship>> FetchStarshipsFromSwapiAsync()
@@ -21,7 +23,7 @@ public class SwapiService : ISwapiService
 
         try
         {
-            var response = await _httpClient.GetAsync($"{SwapiBaseUrl}starships/");
+            var response = await HttpClient.GetAsync($"{SwapiBaseUrl}starships/");
             response.EnsureSuccessStatusCode();
 
             var jsonString = await response.Content.ReadAsStringAsync();
@@ -44,7 +46,7 @@ public class SwapiService : ISwapiService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching starships from SWAPI");
+            Logger.LogError(ex, "Error fetching starships from SWAPI");
             throw;
         }
 
